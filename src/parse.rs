@@ -112,6 +112,8 @@ impl FromStr for Automaton {
 
                 for modifier in line_parts {
                     match modifier {
+                        // start isn't a dedicated role, since the start node could also be an end
+                        // node
                         "start" => start_id = Some(id.clone()),
                         "end" => node.role = Role::End,
                         "catch" => node.role = Role::Catch,

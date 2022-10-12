@@ -6,6 +6,8 @@ use crate::{
 
 impl Automaton {
     pub fn run(self, input: impl IntoIterator<Item = char>) -> ExecutedAutomaton {
+        // try_fold makes the model of "run one step" way easier than a for-loop with many distinct
+        // variables
         let result = input.into_iter().try_fold(
             InProcessAutomaton {
                 current: self.start_at.clone(),
