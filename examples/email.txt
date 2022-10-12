@@ -1,0 +1,43 @@
+// inputs this automaton accepts:
+//
+//   -@00.aa
+//   net-net-@net-net-net.net
+
+S1 # start
+	-._ 1234567890 abcdefghijklmnopqrstuvwxyz => S2
+	@ => SF
+S2
+	-._ 1234567890 abcdefghijklmnopqrstuvwxyz => S2
+	@ => S3
+S3
+	1234567890 abcdefghijklmnopqrstuvwxyz => S4
+	-._ @ => SF
+
+S4
+	- => S4
+	1234567890 abcdefghijklmnopqrstuvwxyz => S5
+	-._ @ => SF
+S5 
+	1234567890 abcdefghijklmnopqrstuvwxyz => S5
+	- => S4
+	. => S6
+	_ @ => SF
+
+S6
+	abcdefghijklmnopqrstuvwxyz => S7
+	-._ 1234567890 @ => SF
+S7
+	abcdefghijklmnopqrstuvwxyz => S8
+	-._ 1234567890 @ => SF
+S8 # end
+	abcdefghijklmnopqrstuvwxyz => S9
+	-._ 1234567890 @ => SF
+S9 # end
+	abcdefghijklmnopqrstuvwxyz => S10
+	-._ 1234567890 @ => SF
+S10 # end
+	-._ 1234567890 @ abcdefghijklmnopqrstuvwxyz => SF
+
+
+SF # catch
+	-._ 1234567890 @ abcdefghijklmnopqrstuvwxyz => SF
