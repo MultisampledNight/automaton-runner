@@ -1,0 +1,8 @@
+S0 # start
+  a => S0
+  b => S1
+S1
+  a => S0
+  b => S2
+S2 # end
+  ab => S2
