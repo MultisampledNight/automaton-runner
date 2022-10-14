@@ -58,10 +58,11 @@ struct InProcessAutomaton {
 
 impl InProcessAutomaton {
     fn unknown_target_conclusion(&self) -> Conclusion {
+        let [.., original, current] = &self.path_taken[..] else { unreachable!() };
         UnknownTarget {
-            from: self.path_taken.last().unwrap().clone(),
+            from: original.clone(),
             through: self.last_char.unwrap(),
-            target: self.current.clone(),
+            target: current.clone(),
         }
     }
 }
