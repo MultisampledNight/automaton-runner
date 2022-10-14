@@ -8,29 +8,31 @@ impl Automaton {
     pub fn run(self, input: impl IntoIterator<Item = char>) -> ExecutedAutomaton {
         // try_fold makes the model of "run one step" way easier than a for-loop with many distinct
         // variables
-        let result = input.into_iter().try_fold(
-            InProcessAutomaton {
-                current: self.start_at.clone(),
-                path_taken: vec![self.start_at],
-                last_char: None,
-            },
-            |state, ch| {
-                let next_id = self
-                    .nodes
-                    .get(&state.current)
-                    .ok_or_else(|| state.clone().fail_as_unknown_target())?
-                    .transitions
-                    .get(&ch)
-                    .ok_or_else(|| state.clone().fail_as_unknown_char(ch))?
-                    .clone();
+        let initial_state = InProcessAutomaton {
+            current: self.start_at.clone(),
+            path_taken: vec![self.start_at],
+            last_char: None,
+        };
 
-                Ok(InProcessAutomaton {
-                    current: next_id.clone(),
-                    path_taken: state.path_taken.with_push(next_id),
-                    last_char: Some(ch),
-                })
-            },
-        );
+        let result = input.into_iter().try_fold(initial_state, |state, ch| {
+            let current_node = self
+                .nodes
+                .get(&state.current)
+                .ok_or_else(|| state.clone().fail_as_unknown_target())?;
+
+            // do note the next ID might not be defined -- then it'll fail next step in ^
+            let next_id = current_node
+                .transitions
+                .get(&ch)
+                .ok_or_else(|| state.clone().fail_as_unknown_char(ch))?
+                .clone();
+
+            Ok(InProcessAutomaton {
+                current: next_id.clone(),
+                path_taken: state.path_taken.with_push(next_id),
+                last_char: Some(ch),
+            })
+        });
         match result {
             Ok(unfinished) => unfinished.finalize(&self.nodes),
             Err(executed_with_err) => executed_with_err,
